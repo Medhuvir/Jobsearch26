@@ -8,7 +8,6 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 808.74 880.46'><rect width='808.74' height='880.46' fill='%230A0A0A'/><path d='M483.25,334.48l206.42,241.28.31-574.37,118.76.12-.36,878.96-325.6-375.94-259.8,325.38c-17.87,16.82-37.4,26.87-61.91,27.91l-161.08-.44L.33,0l160.59.19c23.84.03,43.7,11.97,57.21,30.84l236.91,278.95-61.34,76.52L151.03,107.85c-7.44-12.39-17.88-15.78-35.51-13.86l-.03,658.43c13.06,1.32,23.67.74,36.1-2.51l331.66-415.43Z' fill='%23F5F3EE'/></svg>"/>
 <!-- DN Creative: Bebas Neue + DM Sans -->
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <style>
   /* ── DN Creative Brand System v1.0 ── */
   :root {
@@ -581,7 +580,9 @@
 
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" crossorigin="anonymous"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
 const apps = [
   ["Prop Firm Match Global FZCO","Head of UI/UX","2026-02-22","No Response","No",""],
   ["BNY (Bank of New York Mellon)","Director, Product Design / Platform Design Lead (74200)","2026-02-24","No Response","No",""],
@@ -795,6 +796,7 @@ function filterTable() {
 
 buildTable(apps);
 
+if (typeof Chart === 'undefined') { console.error('Chart.js failed to load'); return; }
 Chart.defaults.color = '#A0A0A0';
 Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
 Chart.defaults.font.size = 11;
@@ -863,4 +865,75 @@ new Chart(document.getElementById('statusChart'), {
   },
   options: {
     responsive: true,
-    maintainAspe
+    maintainAspectRatio: false,
+    cutout: '68%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 14, boxWidth: 10 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${(ctx.parsed/totalApps*100).toFixed(1)}%)` } }
+    }
+  }
+});
+
+new Chart(document.getElementById('companyChart'), {
+  type: 'doughnut',
+  data: {
+    labels: companyLabels,
+    datasets: [{
+      data: companyData,
+      backgroundColor: ['#FF6B2B','#FF8C42','#FFAD6F','#FFD09B','#804020','#502010','#2E2E2E'],
+      borderColor: '#1A1A1A',
+      borderWidth: 3,
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '68%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 8, boxWidth: 8, font: { size: 10 } } },
+    }
+  }
+});
+
+new Chart(document.getElementById('timelineChart'), {
+  type: 'bar',
+  data: {
+    labels: weekLabels,
+    datasets: [
+      {
+        label: 'Applications',
+        data: weeklyApps,
+        backgroundColor: 'rgba(255,107,43,0.75)',
+        borderColor: '#FF6B2B',
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false,
+      },
+      {
+        label: 'Interviews',
+        data: weeklyInterviews,
+        backgroundColor: 'rgba(67,160,71,0.7)',
+        borderColor: '#43A047',
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { grid: { color: '#2E2E2E' }, ticks: { color: '#606060' } },
+      y: { grid: { color: '#2E2E2E' }, ticks: { color: '#606060', stepSize: 5 }, beginAtZero: true }
+    },
+    plugins: {
+      legend: { position: 'top', labels: { padding: 16, boxWidth: 10 } }
+    }
+  }
+});
+});
+</script>
+</body>
+</html>
