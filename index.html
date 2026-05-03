@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Job Applications Dashboard – Dan Nemirovsky</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<style>
+  :root {
+    --bg:        #0F0F0F;
+    --surface:   #1A1A1A;
+    --surface2:  #222222;
+    --border:    #2E2E2E;
+    --orange:    #FF6B2B;
+    --orange2:   #FF8C42;
+    --orange3:   #FFAD6F;
+    --white:     #FFFFFF;
+    --gray:      #A0A0A0;
+    --gray2:     #606060;
+    --red:       #E53935;
+    --green:     #43A047;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header .title-block h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  header .title-block h1 span { color: var(--orange); }
+  header .title-block p { color: var(--gray); font-size: 13px; margin-top: 3px; }
+  header .badge {
+    background: linear-gradient(135deg, var(--orange), var(--orange2));
+    color: var(--white);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 1100px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 600px)  { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--orange), transparent);
+  }
+  .metric-card:hover { border-color: var(--orange); transform: translateY(-2px); }
+  .metric-card.highlight { border-color: var(--orange); }
+  .metric-card.danger::before  { background: linear-gradient(90deg, var(--red), transparent); }
+  .metric-card.success::before { background: linear-gradient(90deg, var(--green), transparent); }
+
+  .metric-number {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--orange), var(--orange3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .metric-card.danger  .metric-number { background: none; -webkit-text-fill-color: var(--red); }
+  .metric-card.success .metric-number { background: none; -webkit-text-fill-color: var(--green); }
+  .metric-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+  .metric-sub { font-size: 10px; color: var(--gray2); margin-top: 4px; }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 1000px) { .charts-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px)  { .charts-grid { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .chart-card h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-card h3::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 14px;
+    background: var(--orange);
+    border-radius: 2px;
+  }
+  .chart-wrap { position: relative; height: 220px; display: flex; align-items: center; justify-content: center; }
+  .chart-wrap.bar { height: 240px; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 700px) { .stats-row { grid-template-columns: 1fr; } }
+
+  .stat-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .stat-block h4 {
+    font-size: 11px;
+    color: var(--orange);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row .label { color: var(--gray); }
+  .stat-row .val   { font-weight: 600; color: var(--white); }
+  .stat-row .val.orange { color: var(--orange); }
+  .stat-row .val.red    { color: var(--red); }
+  .stat-row .val.green  { color: var(--green); }
+
+  .table-section { margin-bottom: 40px; }
+  .table-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .table-controls input, .table-controls select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--white);
+    padding: 8px 14px;
+    font-size: 13px;
+    outline: none;
+  }
+  .table-controls input { flex: 1; min-width: 200px; }
+  .table-controls input:focus, .table-controls select:focus { border-color: var(--orange); }
+  .table-controls select option { background: var(--surface2); }
+
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead tr { background: #1A1A1A; border-bottom: 2px solid var(--orange); }
+  thead th {
+    padding: 13px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray);
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td { padding: 11px 14px; color: var(--white); vertical-align: middle; }
+  tbody td.company { font-weight: 600; }
+  tbody td.position { color: var(--gray); font-size: 12px; max-width: 280px; }
+  tbody td.date { color: var(--gray2); white-space: nowrap; }
+
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge-interview  { background: rgba(255,107,43,0.15); color: var(--orange); border: 1px solid rgba(255,107,43,0.3); }
+  .badge-rejected   { background: rgba(229,57,53,0.12);  color: var(--red);    border: 1px solid rgba(229,57,53,0.3); }
+  .badge-noresponse { background: rgba(255,255,255,0.05); color: var(--gray);  border: 1px solid var(--border); }
+  .badge-other      { background: rgba(67,160,71,0.12); color: var(--green);  border: 1px solid rgba(67,160,71,0.3); }
+
+  .interview-dot { color: var(--orange); font-weight: 700; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-header .section-title { margin: 0; }
+  #row-count { font-size: 12px; color: var(--gray2); margin-left: auto; }
+
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 800px) { .insights-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 500px) { .insights-grid { grid-template-columns: 1fr; } }
+
+  .insight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .insight-card .icon { font-size: 20px; margin-bottom: 10px; }
+  .insight-card .title { font-size: 12px; font-weight: 700; color: var(--orange); margin-bottom: 6px; }
+  .insight-card p { font-size: 12px; color: var(--gray); line-height: 1.6; }
+
+  .divider { height: 1px; background: var(--border); margin: 36px 0; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--orange); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-block">
+    <h1>Job Search <span>Dashboard</span></h1>
+    <p>Dan Nemirovsky &nbsp;·&nbsp; Feb 22 – May 1, 2026 &nbsp;·&nbsp; Updated May 1, 2026</p>
+  </div>
+  <div class="badge">LIVE TRACKER</div>
+</header>
+
+<main>
+
+  <div class="section-title">Overview</div>
+  <div class="metrics-grid">
+    <div class="metric-card highlight">
+      <div class="metric-number">166</div>
+      <div class="metric-label">Applications</div>
+      <div class="metric-sub">Since Feb 22, 2026</div>
+    </div>
+    <div class="metric-card success">
+      <div class="metric-number">10</div>
+      <div class="metric-label">Interviews</div>
+      <div class="metric-sub">Incl. post-interview rejections</div>
+    </div>
+    <div class="metric-card danger">
+      <div class="metric-number">56</div>
+      <div class="metric-label">Rejections</div>
+      <div class="metric-sub">34.8% rejection rate</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">101</div>
+      <div class="metric-label">No Response</div>
+      <div class="metric-sub">Awaiting reply</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">6<span style="font-size:20px;color:var(--orange3)">%</span></div>
+      <div class="metric-label">Interview Rate</div>
+      <div class="metric-sub">Incl. rejected after interview</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">69</div>
+      <div class="metric-label">Days Active</div>
+      <div class="metric-sub">~2.3 apps/day</div>
+    </div>
+  </div>
+
+  <div class="section-title">Analytics</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Status Breakdown</h3>
+      <div class="chart-wrap">
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Top Companies</h3>
+      <div class="chart-wrap">
+        <canvas id="companyChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Applications by Week</h3>
+      <div class="chart-wrap bar">
+        <canvas id="timelineChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-block">
+      <h4>Interview Pipeline</h4>
+      <div class="stat-row"><span class="label">🔥 Google (Staff UX Designer – Finance Transformation)</span><span class="val green">Interview Completed Apr 27 (Stacey) ✔ — Harrison back May 7</span></div>
+      <div class="stat-row"><span class="label">JPMorgan Chase (UX Design Mgr VP)</span><span class="val orange">Actively Interviewing</span></div>
+      <div class="stat-row"><span class="label">JPMorgan Chase (Experience Design ED)</span><span class="val orange">Actively Interviewing</span></div>
+      <div class="stat-row"><span class="label">Guardian Life Insurance (Head of Experience Design)</span><span class="val orange">Actively Interviewing — Nick Hayes</span></div>
+      <div class="stat-row"><span class="label">BRG (Design Director)</span><span class="val green">Completed ✓ (Apr 30) — Stephanie Jordan</span></div>
+      <div class="stat-row"><span class="label">Capital One (PD Director, Enterprise)</span><span class="val green">Completed ✓ (Apr 2)</span></div>
+      <div class="stat-row"><span class="label">Really Global</span><span class="val green">Completed ✓</span></div>
+      <div class="stat-row"><span class="label">Serious Development Healthcare (Fractional)</span><span class="val green">Completed ✓ — Dan followed up May 1</span></div>
+    </div>
+    <div class="stat-block">
+      <h4>Notable Rejections</h4>
+      <div class="stat-row"><span class="label">Capital One (3 roles, same day)</span><span class="val red">Mar 18</span></div>
+      <div class="stat-row"><span class="label">Accenture (2 roles)</span><span class="val red">Mar 19–20</span></div>
+      <div class="stat-row"><span class="label">American Express</span><span class="val red">Mar 19</span></div>
+      <div class="stat-row"><span class="label">Fox Corporation</span><span class="val red">Mar 20</span></div>
+      <div class="stat-row"><span class="label">State Street (VP Hybrid)</span><span class="val red">Mar 23</span></div>
+      <div class="stat-row"><span class="label">General Motors</span><span class="val red">Apr 9</span></div>
+      <div class="stat-row"><span class="label">NextGen Healthcare</span><span class="val red">Apr 11</span></div>
+      <div class="stat-row"><span class="label">Bellweather Agency (2-round interview)</span><span class="val red">Apr 6</span></div>
+      <div class="stat-row"><span class="label">Prudential (Dir. Global Design Language)</span><span class="val red">Final Round</span></div>
+      <div class="stat-row"><span class="label">EY (Studio+ Experience Design Dir.)</span><span class="val red">Apr 14</span></div>
+      <div class="stat-row"><span class="label">NICE (Director, UI and UX Design)</span><span class="val red">Apr 12</span></div>
+      <div class="stat-row"><span class="label">J&amp;J (Global Design Leader, Polyphonic AI)</span><span class="val red">Apr 13</span></div>
+      <div class="stat-row"><span class="label">Swiftly (Director, Product Design)</span><span class="val red">Apr 16</span></div>
+      <div class="stat-row"><span class="label">JPMorgan Chase (Credit Card UX, Superday)</span><span class="val red">Apr 16</span></div>
+      <div class="stat-row"><span class="label">Dandy (Sr. PM, Design Systems)</span><span class="val red">Apr 6</span></div>
+      <div class="stat-row"><span class="label">Discord (Sr. Mgr, Product Design)</span><span class="val red">Apr 14</span></div>
+      <div class="stat-row"><span class="label">CVS Health (Lead Dir, Enterprise Web)</span><span class="val red">Apr 15</span></div>
+      <div class="stat-row"><span class="label">BNY (Dir, Platform Design Lead 68799)</span><span class="val red">Apr 15</span></div>
+      <div class="stat-row"><span class="label">Ipsos (VP, UX &amp; Human Factors)</span><span class="val red">Apr 17</span></div>
+      <div class="stat-row"><span class="label">We Are Rosie (Design Dir, Digital + Motion)</span><span class="val red">Apr 16</span></div>
+      <div class="stat-row"><span class="label">Rokt, Reddit, Cisco, HoneyBook…</span><span class="val red">Various</span></div>
+      <div class="stat-row"><span class="label">DTCC (Assoc. Dir, UI UX Engineering)</span><span class="val red">Apr 17</span></div>
+      <div class="stat-row"><span class="label">Weedmaps (Lead/Staff Designer)</span><span class="val red">Apr 18</span></div>
+      <div class="stat-row"><span class="label">SimpliSafe (Sr. Director, UX)</span><span class="val red">Apr 20</span></div>
+      <div class="stat-row"><span class="label">S&amp;P Global (Exec Dir, Product Mgmt)</span><span class="val red">Apr 21</span></div>
+      <div class="stat-row"><span class="label">TailorCare (Director, Design)</span><span class="val red">Apr 21</span></div>
+      <div class="stat-row"><span class="label">JPMorgan Chase (Exp. Design Exec. Dir. 210720269)</span><span class="val red">Apr 22</span></div>
+      <div class="stat-row"><span class="label">Tivity Health (Director, Product Design UX/UI)</span><span class="val red">Apr 23</span></div>
+      <div class="stat-row"><span class="label">Finch (Founding Designer)</span><span class="val red">Apr 24 (same day)</span></div>
+      <div class="stat-row"><span class="label">OLIVER Agency (Gen AI Creative Director)</span><span class="val red">Apr 26</span></div>
+      <div class="stat-row"><span class="label">poolside (Head of Experience)</span><span class="val red">Apr 28 (next day)</span></div>
+      <div class="stat-row"><span class="label">Wpromote (Head of Web Design &amp; Dev)</span><span class="val red">Apr 29</span></div>
+      <div class="stat-row"><span class="label">Go Fractional (Design Leader, 2nd)</span><span class="val red">Apr 29</span></div>
+      <div class="stat-row"><span class="label">Sanofi (CX Strategy Lead R2839497)</span><span class="val red">May 1 (3 days after applying)</span></div>
+      <div class="stat-row"><span class="label">BNY (SVP, Lead Service Designer 75929)</span><span class="val red">May 1</span></div>
+      <div class="stat-row"><span class="label">Consensys (Design Dir, MetaMask)</span><span class="val red">May 2 (4 days after applying)</span></div>
+    </div>
+    <div class="stat-block">
+      <h4>Application Pace</h4>
+      <div class="stat-row"><span class="label">Feb 22–28</span><span class="val orange">6 apps</span></div>
+      <div class="stat-row"><span class="label">Mar 1–7</span><span class="val orange">14 apps</span></div>
+      <div class="stat-row"><span class="label">Mar 8–14</span><span class="val orange">18 apps</span></div>
+      <div class="stat-row"><span class="label">Mar 15–21</span><span class="val orange">14 apps</span></div>
+      <div class="stat-row"><span class="label">Mar 22–28</span><span class="val orange">8 apps</span></div>
+      <div class="stat-row"><span class="label">Mar 29–Apr 4</span><span class="val orange">19 apps</span></div>
+      <div class="stat-row"><span class="label">Apr 5–11</span><span class="val orange">13 apps</span></div>
+      <div class="stat-row"><span class="label">Apr 12–18</span><span class="val orange">34 apps</span></div>
+      <div class="stat-row"><span class="label">Apr 19–24</span><span class="val orange">14 apps</span></div>
+      <div class="stat-row"><span class="label">Apr 25–May 2</span><span class="val orange">23 apps</span></div>
+      <div class="stat-row" style="border-top: 1px solid var(--orange);margin-top:4px;padding-top:8px">
+        <span class="label" style="color:var(--white);font-weight:600">Total</span>
+        <span class="val orange">166 applications</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-section">
+    <div class="section-header">
+      <div class="section-title">All Applications</div>
+      <span id="row-count">166 records</span>
+    </div>
+    <div class="table-controls">
+      <input type="text" id="searchBox" placeholder="Search company or position…" oninput="filterTable()"/>
+      <select id="statusFilter" onchange="filterTable()">
+        <option value="">All Statuses</option>
+        <option value="interview">Interviews</option>
+        <option value="rejected">Rejected</option>
+        <option value="no response">No Response</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Company</th>
+            <th>Position</th>
+            <th>Applied</th>
+            <th>Status</th>
+            <th>Interview</th>
+            <th>Rejection Date</th>
+          </tr>
+        </thead>
+        <tbody id="appTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-title" style="margin-bottom:16px">Key Insights</div>
+  <div class="insights-grid">
+    <div class="insight-card">
+      <div class="icon">🔥</div>
+      <div class="title">Google Loop — Awaiting Feedback Post-Interview 🔥</div>
+      <p>Interview conducted with Stacey at Google on Apr 27. Harrison Read (recruiter) is OOO Apr 28–May 6; Janeanne is covering. Awaiting feedback when recruiter returns May 7. Biggest active signal.</p>
+    </div>
+    <div class="insight-card">
+      <div class="icon">📈</div>
+      <div class="title">6% Interview Rate — Above Industry Average</div>
+      <p>10 companies advanced to actual interviews across 155 apps (6.5%), including 2 that ultimately rejected after interviewing (Bellweather final round, JPMC Credit Card Superday). Google loop active, BRG interview completed Apr 30, Guardian Life, and JPMC two threads in play.</p>
+    </div>
+    <div class="insight-card">
+      <div class="icon">⚡</div>
+      <div class="title">166 Apps in 69 Days — Still Active</div>
+      <p>16 new applications Apr 25–May 1: SoFi, Intuit, Headway, CapTech, Eight Sleep, WongDoody, Linktree, BBH, Wpromote, poolside, Sanofi, Granicus, Peec AI, Target, WongDoody, PandaDoc (Core UX). Pace at ~2.3/day.</p>
+    </div>
+    <div class="insight-card">
+      <div class="icon">📭</div>
+      <div class="title">61% Still Awaiting Response</div>
+      <p>101 applications with no reply. New Apr 25–30 apps are fresh. Consider follow-up for applications sent 2+ weeks ago (pre-Apr 10 batch). Several BNY, J&amp;J, and JPMorgan threads still pending.</p>
+    </div>
+    <div class="insight-card">
+      <div class="icon">🏦</div>
+      <div class="title">Strong Financial Services Traction</div>
+      <p>JPMorgan Chase (3 active threads), Capital One (interview completed, awaiting next steps), Guardian Life (actively interviewing), Humana (new application Apr 15) — FSI sector holding as strongest pipeline segment.</p>
+    </div>
+    <div class="insight-card">
+      <div class="icon">🔁</div>
+      <div class="title">Persistent Multi-Role Strategy</div>
+      <p>Applied to Capital One (4 roles), JPMorgan Chase (4), BNY (3), Google (2), Bubble (2), Accenture (2), J&amp;J (2), State Street (2). Google recruiter outreach confirms Big Tech traction — 2 active Google threads now.</p>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const apps = [
+  ["Prop Firm Match Global FZCO","Head of UI/UX","2026-02-22","No Response","No",""],
+  ["BNY (Bank of New York Mellon)","Director, Product Design / Platform Design Lead (74200)","2026-02-24","No Response","No",""],
+  ["Bubble","Director, Product Design","2026-02-24","Rejected","No","2026-03-02"],
+  ["Morgan Stanley","UX Team Lead, Executive Director","2026-02-24","Rejected","No","2026-03-03"],
+  ["Smartsheet","Design Role","2026-02-25","No Response","No",""],
+  ["State Street","Head of Design, Wealth Services, VP","2026-02-26","No Response","No",""],
+  ["JPMorgan Chase","UX Designers - Chase Credit Card Services","2026-03-02","Rejected","Yes","2026-04-16"],
+  ["State Street","Product Design, VP Hybrid","2026-03-02","Rejected","No","2026-03-23"],
+  ["Mesh","Director of Product Consumer Experience","2026-03-02","No Response","No",""],
+  ["GlossGenius","Design Role","2026-03-02","No Response","No",""],
+  ["RTX (Raytheon Technologies)","Associate Director, UX & Design (01825018)","2026-03-03","No Response","No",""],
+  ["6sense","Design Role","2026-03-03","No Response","No",""],
+  ["Harvey","Director, Product Design","2026-03-04","No Response","No",""],
+  ["LaunchDarkly","Design Role","2026-03-04","No Response","No",""],
+  ["Found","Marketing Creative Operations & Design Manager","2026-03-04","No Response","No",""],
+  ["Agentio","Product Designer","2026-03-05","Rejected","No","2026-03-12"],
+  ["HoneyBook","Head of Design","2026-03-06","Rejected","No","2026-03-10"],
+  ["Revance Therapeutics","Product Design Lead","2026-03-06","No Response","No",""],
+  ["SafelyYou","Director of AI (Computer Vision)","2026-03-06","Rejected","No","2026-03-09"],
+  ["Fox Corporation","Director, Product Design","2026-03-09","Rejected","No","2026-03-20"],
+  ["JPMorgan Chase","UX Design Manager, VP (210706561)","2026-03-09","Interview Scheduled","Yes",""],
+  ["TaxWell","Head of Product Design","2026-03-09","No Response","No",""],
+  ["Elevance Health","Staff VP, Digital Experience & Engagement (JR183411)","2026-03-09","No Response","No",""],
+  ["Pearl","Senior Director, Product Design","2026-03-09","No Response","No",""],
+  ["Veeam","Staff Product Designer","2026-03-09","No Response","No",""],
+  ["Really Global","Design / Product Role","2026-03-10","Interview Completed","Yes",""],
+  ["Bellweather Agency","Website Director","2026-03-11","Rejected (Final Round)","Yes","2026-04-06"],
+  ["Cisco","Director of UX, Product Experience (2001579)","2026-03-11","Rejected","No","2026-03-11"],
+  ["Accenture","Creative Strategy Director | Agentic Commerce","2026-03-12","Rejected","No","2026-03-20"],
+  ["Swiftly","Director of Product Design","2026-03-12","Rejected","No","2026-04-16"],
+  ["Wilson Language Training","Product Design Director","2026-03-13","No Response","No",""],
+  ["Rippling","Product Design Director, Finance","2026-03-13","No Response","No",""],
+  ["Accenture","Design Director","2026-03-13","Rejected","No","2026-03-19"],
+  ["Reddit","Director of Design, Content Ecosystem","2026-03-13","Rejected","No","2026-03-14"],
+  ["Golub Capital","Senior Manager, Digital Experience","2026-03-17","No Response","No",""],
+  ["Care Lumen","Director of UX","2026-03-17","No Response","No",""],
+  ["OpenTable","Director, Product Design - Diner","2026-03-17","Rejected","No","2026-03-25"],
+  ["Squarespace","Product Design Manager, Websites","2026-03-17","No Response","No",""],
+  ["Confido","Head of Product","2026-03-17","No Response","No",""],
+  ["Finch Legal","Founding Designer","2026-03-17","No Response","No",""],
+  ["Johnson & Johnson","Senior Director, Global Platform Experience & Design Strategy (R-063778)","2026-03-18","No Response","No",""],
+  ["Capital One","Product Design Director, Card Partnerships (R235858)","2026-03-18","Rejected","No","2026-03-18"],
+  ["Capital One","Senior Director, Product Design, Premium Products & Travel (R237840)","2026-03-18","Rejected","No","2026-03-18"],
+  ["Capital One","Director, Product Design - AI in Experience Design (R236672)","2026-03-18","Rejected","No","2026-03-18"],
+  ["Culture Amp","Director, Creative Studio","2026-03-18","Rejected","No","2026-03-19"],
+  ["CVS Health","Lead Director, Enterprise Website Strategy (R0778724)","2026-03-19","Rejected","No","2026-04-15"],
+  ["EY","Studio+ Experience Design Director — UX/UI, Human + AI","2026-03-19","Rejected","No","2026-04-14"],
+  ["American Express","Creative Director, UI Design, OnBrand (26002734)","2026-03-19","Rejected","No","2026-03-19"],
+  ["Inception Point AI","VP of Product","2026-03-19","Rejected","No","2026-03-19"],
+  ["BNY (Bank of New York Mellon)","SVP, Product Design Lead, Platform, AI Hub (72572)","2026-03-24","No Response","No",""],
+  ["PatientFi","Design Role","2026-03-24","No Response","No",""],
+  ["iHerb","Design Role","2026-03-24","No Response","No",""],
+  ["JPMorgan Chase","Experience Design, Executive Director (210709126)","2026-03-26","Interview Scheduled","Yes",""],
+  ["Capital One","Product Design Director, Enterprise Data (R237603)","2026-03-27","Interview Completed","Yes","2026-04-02"],
+  ["Goodbill","Product Design Lead","2026-03-30","No Response","No",""],
+  ["Momentum Worldwide","VP, Design Director, Experience Design","2026-03-31","No Response","No",""],
+  ["Dandy","Senior Product Manager, Design Systems","2026-03-31","Rejected","No","2026-04-06"],
+  ["NICE","Director, UI and UX Design","2026-03-31","Rejected","No","2026-04-12"],
+  ["Prudential","Director, Global Design Language (R-122992)","2026-03-30","Rejected (Final Round)","No","2026-04-17"],
+  ["Guardian Life Insurance","Head of Experience Design (R000108752)","2026-03-31","Actively Interviewing","Yes","TBD"],
+  ["Robert Half","Contract / Contract-to-Hire Recruiter","2026-03-31","Recruiter Outreach","No",""],
+  ["Johnson & Johnson","Global Design Leader, Polyphonic AI Lab (R-066006)","2026-04-01","Rejected","No","2026-04-13"],
+  ["General Motors","Design Manager, Vehicle Shopping & Service Experience (JR-202606106)","2026-04-01","Rejected","No","2026-04-09"],
+  ["BNY (Bank of New York Mellon)","Director, Platform Design Lead (68799)","2026-04-01","Rejected","No","2026-04-15"],
+  ["Bizee","Director of Experience Design","2026-04-01","No Response","No",""],
+  ["Plaid","Product Design Manager - Dashboard","2026-04-01","No Response","No",""],
+  ["Seattle Credit Union","AVP of Marketing and Digital UX","2026-04-02","Rejected","No","2026-04-03"],
+  ["Tango","Director of Product Design","2026-04-03","Rejected","No","2026-04-24"],
+  ["Go Fractional","Design Leader","2026-04-04","No Response","No",""],
+  ["Red Cell Partners","Design / Leadership Role","2026-04-04","No Response","No",""],
+  ["InStride Health","Director of Design","2026-04-05","No Response","No",""],
+  ["Adobe","Director, Creative Strategy & AI Innovation (R167440)","2026-04-06","No Response","No",""],
+  ["Wolters Kluwer","CX/UX Design Manager, Nursing — Hybrid (R0055920)","2026-04-06","No Response","No",""],
+  ["Morgan Stanley","Product Owner, FA Desktop AI Experience, Executive Director","2026-04-06","No Response","No",""],
+  ["Montefiore","Director of Digital Products (JR228755)","2026-04-06","No Response","No",""],
+  ["Novartis","Director, Product Design — 2 Positions (REQ-10074376)","2026-04-06","No Response","No",""],
+  ["Courtyard Inc.","Product Design Director","2026-04-06","No Response","No",""],
+  ["Rokt","Creative Director","2026-04-06","Rejected","No","2026-04-08"],
+  ["Synchrony","VP, UX Creative Director (2600974)","2026-04-07","No Response","No",""],
+  ["S&P Global","Executive Director, Product Management, Enterprise Platforms — Mobility","2026-04-07","Rejected","No","2026-04-21"],
+  ["Go Fractional","Design Leader (2nd Listing)","2026-04-07","Rejected","No","2026-04-29"],
+  ["Discord","Senior Manager, Product Design — B2B2C","2026-04-08","Rejected","No","2026-04-14"],
+  ["Freshpaint","Head of Product Design","2026-04-08","No Response","No",""],
+  ["Crosby","Product Design Lead","2026-04-08","No Response","No",""],
+  ["Smartsheet","Design Role (2nd Application)","2026-04-09","No Response","No",""],
+  ["NextGen Healthcare","Manager, Experience Design (R-101602)","2026-04-09","Rejected","No","2026-04-11"],
+  ["JETSET Pilates","Head of UX","2026-04-09","No Response","No",""],
+  ["Serious Development Healthcare","Senior Product Systems Designer (Fractional)","2026-04-09","Interview Completed","Yes",""],
+  ["Bubble","Director, Product Design (2nd Application)","2026-04-10","No Response","No",""],
+  ["BRG","Design Director","2026-04-13","Interview Completed","Yes","2026-04-30"],
+  ["SS&C Technologies","Director of CX AI","2026-04-13","No Response","No",""],
+  ["Expedia Group","Director / Principal of Product Design – Search & (R-99376)","2026-04-13","No Response","No",""],
+  ["OLIVER Agency (North America)","Gen AI Creative Director","2026-04-13","Rejected","No","2026-04-26"],
+  ["New York Life","Corporate Vice President, Director - Digital Product Design (Req 93557)","2026-04-13","No Response","No",""],
+  ["Google","Staff UX Designer – Finance Transformation UX","2026-04-13","Interview Completed","Yes","2026-04-27"],
+  ["Teradata","Director, User Experience Engineering","2026-04-13","Rejected","No","2026-04-24"],
+  ["PandaDoc","Director of Product, Core Platform & Mobile","2026-04-13","Rejected","No","2026-04-25"],
+  ["Jobgether","Senior Director, Product Design","2026-04-13","No Response","No",""],
+  ["Runyon","Sr. Director, Product Design","2026-04-13","No Response","No",""],
+  ["Ipsos","Vice President, User Experience & Human Factors","2026-04-13","Rejected","No","2026-04-17"],
+  ["Resideo","Director - Design Assurance","2026-04-13","No Response","No",""],
+  ["DesignMinds","Studio Director","2026-04-13","No Response","No",""],
+  ["Knighthead Life","Senior Design Director","2026-04-13","No Response","No",""],
+  ["Google","Design Role (2nd Application)","2026-04-14","No Response","No",""],
+  ["Monarch Money","Product Design Manager","2026-03-31","Rejected","No","2026-04-01"],
+  ["Circa (IPG DXTRA)","Design/Creative Role","2026-03-31","No Response","No",""],
+  ["NAINOA","Director of Design and Delivery","2026-04-01","No Response","No",""],
+  ["JPMorgan Chase","Experience Design Executive Director - Digital Channels (210720269)","2026-04-14","Rejected","No","2026-04-22"],
+  ["PVH Corp","Sr. Director, AI & Innovation","2026-04-14","No Response","No",""],
+  ["Shinesty","Senior Production Artist","2026-04-14","No Response","No",""],
+  ["Sodexo","VP, Digital, AI & Innovation, North America (987682)","2026-04-14","Rejected","No","2026-04-15"],
+  ["Humana","Director, Product Design for Onboarding (R-405643)","2026-04-15","No Response","No",""],
+  ["Chubb","VP, Human–AI Experience & Adoption (32084)","2026-04-15","No Response","No",""],
+  ["SmarterDx","Design Role (no title in confirmation)","2026-04-15","No Response","No",""],
+  ["Weedmaps","Lead/Staff Product Designer (Remote)","2026-04-15","Rejected","No","2026-04-18"],
+  ["Jasper.ai","Senior Brand Designer","2026-04-15","No Response","No",""],
+  ["We Are Rosie","Design Director (Digital + Motion)","2026-04-15","Rejected","No","2026-04-16"],
+  ["CurbWaste","Head of AI","2026-04-16","No Response","No",""],
+  ["Garage","Founding Designer","2026-04-17","No Response","No",""],
+  ["Unknown (via Indeed)","Director, AI Marketing","2026-04-17","No Response","No",""],
+  ["Unknown (via Indeed)","Design Director","2026-04-17","No Response","No",""],
+  ["Unknown (via Indeed)","Head of Design","2026-04-17","No Response","No",""],
+  ["SimpliSafe","Sr. Director, UX","2026-04-13","Rejected","No","2026-04-20"],
+  ["Gem.com","Director, UX Design","2026-04-18","No Response","No",""],
+  ["BigPanda","Design Role (no title in confirmation)","2026-04-19","No Response","No",""],
+  ["DTCC","Associate Director, UI UX Engineering","2026-04-17","Rejected","No","2026-04-17"],
+  ["Thomson Reuters","Senior Director, UX Design (JREQ198032)","2026-04-20","No Response","No",""],
+  ["Lemon.io","Design Role (no title in confirmation)","2026-04-20","No Response","No",""],
+  ["TailorCare","Director, Design","2026-04-20","Rejected","No","2026-04-21"],
+  ["PIMCO","Design Role (no title in confirmation)","2026-04-21","No Response","No",""],
+  ["Suno","Head of Product Design","2026-04-21","Rejected","No","2026-04-24"],
+  ["Tivity Health","Director, Product Design (UX/UI) - remote opportunity","2026-04-21","Rejected","No","2026-04-23"],
+  ["Nationwide","Director, Digital Product Management","2026-04-22","No Response","No",""],
+  ["Zillow","Director, Experience Design - StreetEasy","2026-04-22","No Response","No",""],
+  ["Jack & Jill (Fanvue.com)","Head of Design at Fanvue.com","2026-04-22","No Response","No",""],
+  ["Finch","Founding Designer","2026-04-24","Rejected","No","2026-04-24"],
+  ["Keller Executive Search","Head of Visual Design","2026-04-24","No Response","No",""],
+  ["Stryker","Senior Manager CX Design - Remote (R562926)","2026-04-24","No Response","No",""],
+  ["Tithely","Head of Product Design","2026-04-24","No Response","No",""],
+  ["YO HR Consultancy","Senior UI/UX Designer - Remote","2026-04-25","No Response","No",""],
+  ["PandaDoc","Director of Product, Core UX","2026-04-25","No Response","No",""],
+  ["poolside","Head of Experience","2026-04-27","Rejected","No","2026-04-28"],
+  ["Sanofi","Consumer Experience (CX) Strategy Lead (R2839497)","2026-04-27","Rejected","No","2026-05-01"],
+  ["Wpromote","Head of Web Design and Development","2026-04-27","Rejected","No","2026-04-29"],
+  ["Linktree","Contract Product Designer (Staff-level), 6 months","2026-04-28","No Response","No",""],
+  ["WongDoody","Director, Product Design & Innovation","2026-04-28","No Response","No",""],
+  ["Brown Brothers Harriman","Design Role (no title in confirmation)","2026-04-29","No Response","No",""],
+  ["CapTech","Associate UX Director","2026-04-29","No Response","No",""],
+  ["Eight Sleep","Design Role (no title in confirmation)","2026-04-29","No Response","No",""],
+  ["Headway","Staff Product Designer, Group Practices","2026-04-29","No Response","No",""],
+  ["Intuit","Director, Design - Services","2026-04-29","No Response","No",""],
+  ["SoFi","Senior Staff Product Designer, Money","2026-04-29","No Response","No",""],
+  ["Granicus","Director - Digital Experience (2026-10112)","2026-04-30","No Response","No",""],
+  ["Peec AI","Web Experience Lead","2026-04-30","No Response","No",""],
+  ["Target","Senior Manager UX Product Design - Inspire & Motivate","2026-04-30","No Response","No",""],
+  ["BNY (Bank of New York Mellon)","Senior Vice President, Lead Service Designer (75929)","2026-04-15","Rejected","No","2026-05-01"],
+  ["Aurora Solar","Head of Design","2026-04-29","No Response","No",""],
+  ["Consensys","Design Director - MetaMask (Transactions)","2026-04-28","Rejected","No","2026-05-02"],
+  ["Tailscale","Brand Designer","2026-05-01","No Response","No",""],
+  ["Tremendous","Design Role (no title in confirmation)","2026-05-01","No Response","No",""],
+  ["Zoom","Digital Experience Lead","2026-05-01","No Response","No",""],
+  ["Biolumina","VP, ACD Art","2026-05-02","No Response","No",""],
+  ["Garage","Creative Director","2026-05-02","No Response","No",""],
+  ["LTK","Manager, Product Design","2026-05-02","No Response","No",""],
+  ["MillerKnoll","Design Role (no title in confirmation)","2026-05-02","No Response","No",""],
+  ["Spectrum","Director, UX Design, Agent Experience","2026-05-02","No Response","No",""],
+];
+
+function getStatusBadge(status) {
+  const s = status.toLowerCase();
+  if (s.includes('interview') || s.includes('completed')) return `<span class="status-badge badge-interview">${status}</span>`;
+  if (s === 'rejected') return `<span class="status-badge badge-rejected">Rejected</span>`;
+  if (s === 'no response') return `<span class="status-badge badge-noresponse">No Response</span>`;
+  return `<span class="status-badge badge-other">${status}</span>`;
+}
+
+function buildTable(data) {
+  const tbody = document.getElementById('appTable');
+  tbody.innerHTML = '';
+  data.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="date" style="color:var(--gray2);min-width:30px">${i+1}</td>
+      <td class="company">${r[0]}</td>
+      <td class="position">${r[1]}</td>
+      <td class="date">${r[2]}</td>
+      <td>${getStatusBadge(r[3])}</td>
+      <td class="date" style="text-align:center">${r[4]==='Yes'?'<span class="interview-dot">●</span>':'<span style="color:var(--gray2)">—</span>'}</td>
+      <td class="date">${r[5]||'<span style="color:var(--gray2)">—</span>'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('row-count').textContent = `${data.length} records`;
+}
+
+function filterTable() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const sf = document.getElementById('statusFilter').value.toLowerCase();
+  const filtered = apps.filter(r => {
+    const matchQ = !q || r[0].toLowerCase().includes(q) || r[1].toLowerCase().includes(q);
+    let matchS = true;
+    if (sf === 'interview') matchS = r[3].toLowerCase().includes('interview') || r[3].toLowerCase().includes('completed') || r[4] === 'Yes';
+    else if (sf === 'rejected') matchS = r[3].toLowerCase() === 'rejected';
+    else if (sf === 'no response') matchS = r[3].toLowerCase() === 'no response';
+    else if (sf === 'other') matchS = !['no response','rejected'].includes(r[3].toLowerCase()) && !r[3].toLowerCase().includes('interview') && !r[3].toLowerCase().includes('completed');
+    return matchQ && matchS;
+  });
+  buildTable(filtered);
+}
+
+buildTable(apps);
+
+Chart.defaults.color = '#A0A0A0';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.font.size = 11;
+
+new Chart(document.getElementById('statusChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Interview / Active','Rejected','No Response','Other'],
+    datasets: [{
+      data: [10, 56, 101, 1],
+      backgroundColor: ['#FF6B2B','#E53935','#404040','#43A047'],
+      borderColor: '#1A1A1A',
+      borderWidth: 3,
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '68%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 14, boxWidth: 10 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${(ctx.parsed/155*100).toFixed(1)}%)` } }
+
+    }
+  }
+});
+
+new Chart(document.getElementById('companyChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Capital One (4)','JPMorgan Chase (4)','BNY (3)','Google (2)','Bubble (2)','Accenture (2)','Other'],
+    datasets: [{
+      data: [4, 4, 3, 2, 2, 2, 103],
+      backgroundColor: ['#FF6B2B','#FF8C42','#FFAD6F','#FFD09B','#804020','#502010','#2E2E2E'],
+      borderColor: '#1A1A1A',
+      borderWidth: 3,
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '68%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 8, boxWidth: 8, font: { size: 10 } } },
+    }
+  }
+});
+
+new Chart(document.getElementById('timelineChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Feb 22–28','Mar 1–7','Mar 8–14','Mar 15–21','Mar 22–28','Mar 29–Apr 4','Apr 5–11','Apr 12–18','Apr 19–24','Apr 25–May 1'],
+    datasets: [
+      {
+        label: 'Applications',
+        data: [6, 14, 18, 14, 8, 19, 13, 34, 14, 23],
+        backgroundColor: 'rgba(255,107,43,0.75)',
+        borderColor: '#FF6B2B',
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false,
+      },
+      {
+        label: 'Interviews',
+        data: [0, 1, 3, 0, 2, 0, 2, 2, 0, 0],
+        backgroundColor: 'rgba(67,160,71,0.7)',
+        borderColor: '#43A047',
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { grid: { color: '#2E2E2E' }, ticks: { color: '#606060' } },
+      y: { grid: { color: '#2E2E2E' }, ticks: { color: '#606060', stepSize: 5 }, beginAtZero: true }
+    },
+    plugins: {
+      legend: { position: 'top', labels: { padding: 16, boxWidth: 10 } }
+    }
+  }
+});
+</script>
+</body>
+</html>
