@@ -3,58 +3,142 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Job Applications Dashboard – Dan Nemirovsky</title>
+<title>Job Search Dashboard — Dan Nemirovsky</title>
+<!-- DN Creative favicon (DN mark, white on Pitch Black) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 808.74 880.46'><rect width='808.74' height='880.46' fill='%230A0A0A'/><path d='M483.25,334.48l206.42,241.28.31-574.37,118.76.12-.36,878.96-325.6-375.94-259.8,325.38c-17.87,16.82-37.4,26.87-61.91,27.91l-161.08-.44L.33,0l160.59.19c23.84.03,43.7,11.97,57.21,30.84l236.91,278.95-61.34,76.52L151.03,107.85c-7.44-12.39-17.88-15.78-35.51-13.86l-.03,658.43c13.06,1.32,23.67.74,36.1-2.51l331.66-415.43Z' fill='%23F5F3EE'/></svg>"/>
+<!-- DN Creative: Bebas Neue + DM Sans -->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <style>
+  /* ── DN Creative Brand System v1.0 ── */
   :root {
-    --bg:        #0F0F0F;
-    --surface:   #1A1A1A;
-    --surface2:  #222222;
-    --border:    #2E2E2E;
-    --orange:    #FF6B2B;
-    --orange2:   #FF8C42;
-    --orange3:   #FFAD6F;
-    --white:     #FFFFFF;
-    --gray:      #A0A0A0;
-    --gray2:     #606060;
+    --bg:        #0A0A0A;   /* Pitch Black */
+    --surface:   #1E1E1E;   /* Surface Dark */
+    --surface2:  #141414;   /* Surface Darker */
+    --border:    rgba(245,243,238,0.08);
+    --orange:    #FF5E1A;   /* Blaze Orange */
+    --orange2:   #FF8050;   /* Orange Light */
+    --orange3:   rgba(255,94,26,0.12); /* Orange Tint */
+    --white:     #F5F3EE;   /* Warm White */
+    --gray:      #6B6B6B;   /* Graphite */
+    --gray2:     #383838;   /* Gray Mid */
     --red:       #E53935;
     --green:     #43A047;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body:    'DM Sans', sans-serif;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg);
     color: var(--white);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-body);
     min-height: 100vh;
+    position: relative;
   }
+  /* Topographic texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cg fill='none' stroke='%23FF5E1A' stroke-width='0.6' opacity='0.09'%3E%3Cellipse cx='300' cy='300' rx='280' ry='180'/%3E%3Cellipse cx='300' cy='300' rx='240' ry='145'/%3E%3Cellipse cx='300' cy='300' rx='200' ry='112'/%3E%3Cellipse cx='300' cy='300' rx='160' ry='80'/%3E%3Cellipse cx='300' cy='300' rx='120' ry='50'/%3E%3Cellipse cx='300' cy='300' rx='80' ry='28'/%3E%3Cellipse cx='180' cy='180' rx='140' ry='90'/%3E%3Cellipse cx='180' cy='180' rx='110' ry='68'/%3E%3Cellipse cx='180' cy='180' rx='80' ry='48'/%3E%3Cellipse cx='460' cy='440' rx='160' ry='100'/%3E%3Cellipse cx='460' cy='440' rx='120' ry='72'/%3E%3Cellipse cx='460' cy='440' rx='80' ry='46'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 600px 600px;
+    pointer-events: none;
+    z-index: 0;
+    animation: topoShift 24s ease-in-out infinite;
+  }
+  @keyframes topoShift {
+    0%   { transform: translate(0,0) scale(1); }
+    50%  { transform: translate(-20px,-10px) scale(1.02); }
+    100% { transform: translate(0,0) scale(1); }
+  }
+  main, header { position: relative; z-index: 1; }
 
   header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 24px 40px;
+    background: var(--surface2);
+    border-bottom: 0.5px solid var(--border);
+    padding: 18px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  header .title-block h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
-  header .title-block h1 span { color: var(--orange); }
-  header .title-block p { color: var(--gray); font-size: 13px; margin-top: 3px; }
-  header .badge {
-    background: linear-gradient(135deg, var(--orange), var(--orange2));
+  /* DN Creative Lockup 1 — Horizontal Primary */
+  .dn-lockup {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+  }
+  .dn-mark {
+    width: 28px;
+    height: auto;
+    flex-shrink: 0;
+  }
+  .dn-divider {
+    width: 0.5px;
+    height: 32px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .dn-wordmark {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .dn-wordmark-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    letter-spacing: 0.1em;
     color: var(--white);
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    line-height: 1;
+  }
+  .dn-wordmark-sub {
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #CC4C16;
+    line-height: 1;
+  }
+  header .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  header .dashboard-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    line-height: 1;
+  }
+  header .dashboard-title span { color: var(--orange); }
+  header .dashboard-meta {
+    font-family: var(--font-body);
+    color: var(--gray);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+  }
+  header .badge {
+    background: var(--orange);
+    color: #0A0A0A;
+    padding: 5px 14px;
+    border-radius: 2px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    font-weight: 400;
+    margin-top: 4px;
   }
 
   main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
 
   .section-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
+    font-family: var(--font-display);
+    font-size: 16px;
+    letter-spacing: 0.2em;
     color: var(--orange);
     text-transform: uppercase;
     margin-bottom: 16px;
@@ -75,7 +159,7 @@
     border-radius: 12px;
     padding: 20px 16px;
     text-align: center;
-    transition: border-color 0.2s, transform 0.2s;
+    transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
     position: relative;
     overflow: hidden;
   }
@@ -92,18 +176,16 @@
   .metric-card.success::before { background: linear-gradient(90deg, var(--green), transparent); }
 
   .metric-number {
-    font-size: 42px;
-    font-weight: 800;
+    font-family: var(--font-display);
+    font-size: 52px;
+    letter-spacing: 0.02em;
     line-height: 1;
     margin-bottom: 6px;
-    background: linear-gradient(135deg, var(--orange), var(--orange3));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--orange);
   }
-  .metric-card.danger  .metric-number { background: none; -webkit-text-fill-color: var(--red); }
-  .metric-card.success .metric-number { background: none; -webkit-text-fill-color: var(--green); }
-  .metric-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+  .metric-card.danger  .metric-number { color: var(--red); }
+  .metric-card.success .metric-number { color: var(--green); }
+  .metric-label { font-family: var(--font-body); font-size: 10px; color: var(--gray); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
   .metric-sub { font-size: 10px; color: var(--gray2); margin-top: 4px; }
 
   .charts-grid {
@@ -122,8 +204,9 @@
     padding: 24px;
   }
   .chart-card h3 {
-    font-size: 13px;
-    font-weight: 600;
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.15em;
     color: var(--white);
     margin-bottom: 20px;
     display: flex;
@@ -156,11 +239,11 @@
     padding: 20px;
   }
   .stat-block h4 {
-    font-size: 11px;
+    font-family: var(--font-display);
+    font-size: 15px;
     color: var(--orange);
-    font-weight: 700;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    letter-spacing: 1px;
     margin-bottom: 12px;
   }
   .stat-row {
@@ -280,11 +363,22 @@
 <body>
 
 <header>
-  <div class="title-block">
-    <h1>Job Search <span>Dashboard</span></h1>
-    <p>Dan Nemirovsky &nbsp;·&nbsp; Feb 22 – May 1, 2026 &nbsp;·&nbsp; Updated May 1, 2026</p>
+  <!-- DN Creative Lockup 1 — Horizontal Primary -->
+  <a class="dn-lockup" href="#" aria-label="DN Creative">
+    <svg class="dn-mark" viewBox="0 0 808.74 880.46" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M483.25,334.48l206.42,241.28.31-574.37,118.76.12-.36,878.96-325.6-375.94-259.8,325.38c-17.87,16.82-37.4,26.87-61.91,27.91l-161.08-.44L.33,0l160.59.19c23.84.03,43.7,11.97,57.21,30.84l236.91,278.95-61.34,76.52L151.03,107.85c-7.44-12.39-17.88-15.78-35.51-13.86l-.03,658.43c13.06,1.32,23.67.74,36.1-2.51l331.66-415.43Z" fill="#F5F3EE"/>
+    </svg>
+    <div class="dn-divider"></div>
+    <div class="dn-wordmark">
+      <span class="dn-wordmark-name">DN Creative</span>
+      <span class="dn-wordmark-sub">Design Studio</span>
+    </div>
+  </a>
+  <div class="header-right">
+    <div class="dashboard-title">Job Search <span>Dashboard</span></div>
+    <div class="dashboard-meta">Dan Nemirovsky &nbsp;·&nbsp; Feb 22 – May 2, 2026 &nbsp;·&nbsp; Updated May 2, 2026</div>
+    <div class="badge">LIVE TRACKER</div>
   </div>
-  <div class="badge">LIVE TRACKER</div>
 </header>
 
 <main>
