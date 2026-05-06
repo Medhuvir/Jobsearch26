@@ -8,6 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 808.74 880.46'><rect width='808.74' height='880.46' fill='%230A0A0A'/><path d='M483.25,334.48l206.42,241.28.31-574.37,118.76.12-.36,878.96-325.6-375.94-259.8,325.38c-17.87,16.82-37.4,26.87-61.91,27.91l-161.08-.44L.33,0l160.59.19c23.84.03,43.7,11.97,57.21,30.84l236.91,278.95-61.34,76.52L151.03,107.85c-7.44-12.39-17.88-15.78-35.51-13.86l-.03,658.43c13.06,1.32,23.67.74,36.1-2.51l331.66-415.43Z' fill='%23F5F3EE'/></svg>"/>
 <!-- DN Creative: Bebas Neue + DM Sans -->
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <style>
   /* ── DN Creative Brand System v1.0 ── */
   :root {
@@ -220,7 +221,7 @@
     background: var(--orange);
     border-radius: 2px;
   }
-  .chart-wrap { position: relative; height: 220px; }
+  .chart-wrap { position: relative; height: 220px; display: flex; align-items: center; justify-content: center; }
   .chart-wrap.bar { height: 240px; }
 
   .stats-row {
@@ -375,8 +376,7 @@
   </a>
   <div class="header-right">
     <div class="dashboard-title">Job Search <span>Dashboard</span></div>
-    <div class="dashboard-meta">Dan Nemirovsky &nbsp;·&nbsp; 2/22 &ndash; <span id="dash-today"></span></div>
-<script>(function(){var d=new Date();document.getElementById('dash-today').textContent=(d.getMonth()+1)+'/'+(d.getDate())+'/'+d.getFullYear();})();</script>
+    <div class="dashboard-meta">Dan Nemirovsky &nbsp;·&nbsp; Feb 22 – May 5, 2026 &nbsp;·&nbsp; Updated May 5, 2026</div>
     <div class="badge">LIVE TRACKER</div>
   </div>
 </header>
@@ -386,22 +386,22 @@
   <div class="section-title">Overview</div>
   <div class="metrics-grid">
     <div class="metric-card highlight">
-      <div class="metric-number">166</div>
+      <div class="metric-number">178</div>
       <div class="metric-label">Applications</div>
       <div class="metric-sub">Since Feb 22, 2026</div>
     </div>
     <div class="metric-card success">
-      <div class="metric-number">10</div>
+      <div class="metric-number">11</div>
       <div class="metric-label">Interviews</div>
       <div class="metric-sub">Incl. post-interview rejections</div>
     </div>
     <div class="metric-card danger">
-      <div class="metric-number">56</div>
+      <div class="metric-number">62</div>
       <div class="metric-label">Rejections</div>
       <div class="metric-sub">34.8% rejection rate</div>
     </div>
     <div class="metric-card">
-      <div class="metric-number">101</div>
+      <div class="metric-number">106</div>
       <div class="metric-label">No Response</div>
       <div class="metric-sub">Awaiting reply</div>
     </div>
@@ -411,9 +411,9 @@
       <div class="metric-sub">Incl. rejected after interview</div>
     </div>
     <div class="metric-card">
-      <div class="metric-number">69</div>
+      <div class="metric-number">72</div>
       <div class="metric-label">Days Active</div>
-      <div class="metric-sub">~2.3 apps/day</div>
+      <div class="metric-sub">~2.5 apps/day</div>
     </div>
   </div>
 
@@ -442,14 +442,15 @@
   <div class="stats-row">
     <div class="stat-block">
       <h4>Interview Pipeline</h4>
-      <div class="stat-row"><span class="label">🔥 Google (Staff UX Designer – Finance Transformation)</span><span class="val green">Interview Completed Apr 27 (Stacey) ✔ — Harrison back May 7</span></div>
+      <div class="stat-row"><span class="label">🔥 Google (Staff UX Designer – Finance Transformation)</span><span class="val orange">Actively Interviewing — Virtual Onsite Scheduling in Progress (Jane Anne)</span></div>
+      <div class="stat-row"><span class="label">🔥 Spectrum (Sr. Director, eCommerce UI/UX Residential)</span><span class="val orange">Interview Scheduled — May 7, 2:00 PM (Katherine Brehmer)</span></div>
       <div class="stat-row"><span class="label">JPMorgan Chase (UX Design Mgr VP)</span><span class="val orange">Actively Interviewing</span></div>
       <div class="stat-row"><span class="label">JPMorgan Chase (Experience Design ED)</span><span class="val orange">Actively Interviewing</span></div>
       <div class="stat-row"><span class="label">Guardian Life Insurance (Head of Experience Design)</span><span class="val orange">Actively Interviewing — Nick Hayes</span></div>
       <div class="stat-row"><span class="label">BRG (Design Director)</span><span class="val green">Completed ✓ (Apr 30) — Stephanie Jordan</span></div>
       <div class="stat-row"><span class="label">Capital One (PD Director, Enterprise)</span><span class="val green">Completed ✓ (Apr 2)</span></div>
       <div class="stat-row"><span class="label">Really Global</span><span class="val green">Completed ✓</span></div>
-      <div class="stat-row"><span class="label">Serious Development Healthcare (Fractional)</span><span class="val green">Completed ✓ — Dan followed up May 1</span></div>
+      <div class="stat-row"><span class="label">Serious Development Healthcare (Fractional)</span><span class="val green">Awaiting feedback — TL returning from vacation</span></div>
     </div>
     <div class="stat-block">
       <h4>Notable Rejections</h4>
@@ -489,6 +490,12 @@
       <div class="stat-row"><span class="label">Sanofi (CX Strategy Lead R2839497)</span><span class="val red">May 1 (3 days after applying)</span></div>
       <div class="stat-row"><span class="label">BNY (SVP, Lead Service Designer 75929)</span><span class="val red">May 1</span></div>
       <div class="stat-row"><span class="label">Consensys (Design Dir, MetaMask)</span><span class="val red">May 2 (4 days after applying)</span></div>
+      <div class="stat-row"><span class="label">Freshpaint (Head of Product Design)</span><span class="val red">May 4</span></div>
+      <div class="stat-row"><span class="label">Empower Pharmacy</span><span class="val red">May 4</span></div>
+      <div class="stat-row"><span class="label">The Arena (Defense/NatSec tech)</span><span class="val red">May 4</span></div>
+      <div class="stat-row"><span class="label">Creative Circle (Product Mktg Writer)</span><span class="val red">May 5 (same day)</span></div>
+      <div class="stat-row"><span class="label">Capital One (Product Design Mgr R241109)</span><span class="val red">May 5</span></div>
+      <div class="stat-row"><span class="label">Go Fractional (Design Leader, 1st listing)</span><span class="val red">Apr 29</span></div>
     </div>
     <div class="stat-block">
       <h4>Application Pace</h4>
@@ -502,9 +509,10 @@
       <div class="stat-row"><span class="label">Apr 12–18</span><span class="val orange">34 apps</span></div>
       <div class="stat-row"><span class="label">Apr 19–24</span><span class="val orange">14 apps</span></div>
       <div class="stat-row"><span class="label">Apr 25–May 2</span><span class="val orange">23 apps</span></div>
+      <div class="stat-row"><span class="label">May 2–5</span><span class="val orange">17 apps</span></div>
       <div class="stat-row" style="border-top: 1px solid var(--orange);margin-top:4px;padding-top:8px">
         <span class="label" style="color:var(--white);font-weight:600">Total</span>
-        <span class="val orange">166 applications</span>
+        <span class="val orange">178 applications</span>
       </div>
     </div>
   </div>
@@ -512,7 +520,7 @@
   <div class="table-section">
     <div class="section-header">
       <div class="section-title">All Applications</div>
-      <span id="row-count">166 records</span>
+      <span id="row-count">178 records</span>
     </div>
     <div class="table-controls">
       <input type="text" id="searchBox" placeholder="Search company or position…" oninput="filterTable()"/>
@@ -548,23 +556,23 @@
   <div class="insights-grid">
     <div class="insight-card">
       <div class="icon">🔥</div>
-      <div class="title">Google Loop — Awaiting Feedback Post-Interview 🔥</div>
-      <p>Interview conducted with Stacey at Google on Apr 27. Harrison Read (recruiter) is OOO Apr 28–May 6; Janeanne is covering. Awaiting feedback when recruiter returns May 7. Biggest active signal.</p>
+      <div class="title">Google — Virtual Onsite Next! 🔥🔥</div>
+      <p>Preliminary screen with Stacey on Apr 27 came back POSITIVE (confirmed May 4 by Jane Anne Doerrfeld). Virtual onsite interview now being scheduled. Harrison Read returns May 7. Biggest active opportunity.</p>
     </div>
     <div class="insight-card">
       <div class="icon">📈</div>
-      <div class="title">6% Interview Rate — Above Industry Average</div>
-      <p>10 companies advanced to actual interviews across 155 apps (6.5%), including 2 that ultimately rejected after interviewing (Bellweather final round, JPMC Credit Card Superday). Google loop active, BRG interview completed Apr 30, Guardian Life, and JPMC two threads in play.</p>
+      <div class="title">6% Interview Rate — 11 Interviews, 2 New Active</div>
+      <p>11 companies advanced to interviews across 178 apps (6.2%). Google is moving to virtual onsite; Spectrum interview scheduled May 7. JPMorgan Chase (2 threads), Guardian Life, all actively interviewing. BRG, Capital One interviews completed.</p>
     </div>
     <div class="insight-card">
       <div class="icon">⚡</div>
-      <div class="title">166 Apps in 69 Days — Still Active</div>
-      <p>16 new applications Apr 25–May 1: SoFi, Intuit, Headway, CapTech, Eight Sleep, WongDoody, Linktree, BBH, Wpromote, poolside, Sanofi, Granicus, Peec AI, Target, WongDoody, PandaDoc (Core UX). Pace at ~2.3/day.</p>
+      <div class="title">178 Apps in 72 Days — Still Active</div>
+      <p>17 new applications May 2–5: Bloomreach, Veracode, Creative Circle (2 roles), Stripe, Spectrum (eCommerce), Wolters Kluwer (2nd), Empower Pharmacy, The Arena, BBH (2nd), Capital One (R241109), Confidential (LinkedIn). Pace at ~2.5/day.</p>
     </div>
     <div class="insight-card">
       <div class="icon">📭</div>
-      <div class="title">61% Still Awaiting Response</div>
-      <p>101 applications with no reply. New Apr 25–30 apps are fresh. Consider follow-up for applications sent 2+ weeks ago (pre-Apr 10 batch). Several BNY, J&amp;J, and JPMorgan threads still pending.</p>
+      <div class="title">60% Still Awaiting Response</div>
+      <p>106 applications with no reply. May 2–5 batch is very fresh. Consider follow-up on pre-Apr 20 apps (3+ weeks old). BNY (3 threads), JPMorgan (2), J&amp;J (2), and Intuit still pending.</p>
     </div>
     <div class="insight-card">
       <div class="icon">🏦</div>
@@ -580,9 +588,7 @@
 
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" crossorigin="anonymous"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
 const apps = [
   ["Prop Firm Match Global FZCO","Head of UI/UX","2026-02-22","No Response","No",""],
   ["BNY (Bank of New York Mellon)","Director, Product Design / Platform Design Lead (74200)","2026-02-24","No Response","No",""],
@@ -604,7 +610,7 @@ const apps = [
   ["Revance Therapeutics","Product Design Lead","2026-03-06","No Response","No",""],
   ["SafelyYou","Director of AI (Computer Vision)","2026-03-06","Rejected","No","2026-03-09"],
   ["Fox Corporation","Director, Product Design","2026-03-09","Rejected","No","2026-03-20"],
-  ["JPMorgan Chase","UX Design Manager, VP (210706561)","2026-03-09","Interview Scheduled","Yes",""],
+  ["JPMorgan Chase","UX Design Manager, VP (210706561)","2026-03-09","Actively Interviewing","Yes","TBD"],
   ["TaxWell","Head of Product Design","2026-03-09","No Response","No",""],
   ["Elevance Health","Staff VP, Digital Experience & Engagement (JR183411)","2026-03-09","No Response","No",""],
   ["Pearl","Senior Director, Product Design","2026-03-09","No Response","No",""],
@@ -636,7 +642,7 @@ const apps = [
   ["BNY (Bank of New York Mellon)","SVP, Product Design Lead, Platform, AI Hub (72572)","2026-03-24","No Response","No",""],
   ["PatientFi","Design Role","2026-03-24","No Response","No",""],
   ["iHerb","Design Role","2026-03-24","No Response","No",""],
-  ["JPMorgan Chase","Experience Design, Executive Director (210709126)","2026-03-26","Interview Scheduled","Yes",""],
+  ["JPMorgan Chase","Experience Design, Executive Director (210709126)","2026-03-26","Actively Interviewing","Yes","TBD"],
   ["Capital One","Product Design Director, Enterprise Data (R237603)","2026-03-27","Interview Completed","Yes","2026-04-02"],
   ["Goodbill","Product Design Lead","2026-03-30","No Response","No",""],
   ["Momentum Worldwide","VP, Design Director, Experience Design","2026-03-31","No Response","No",""],
@@ -652,7 +658,7 @@ const apps = [
   ["Plaid","Product Design Manager - Dashboard","2026-04-01","No Response","No",""],
   ["Seattle Credit Union","AVP of Marketing and Digital UX","2026-04-02","Rejected","No","2026-04-03"],
   ["Tango","Director of Product Design","2026-04-03","Rejected","No","2026-04-24"],
-  ["Go Fractional","Design Leader","2026-04-04","No Response","No",""],
+  ["Go Fractional","Design Leader","2026-04-04","Rejected","No","2026-04-29"],
   ["Red Cell Partners","Design / Leadership Role","2026-04-04","No Response","No",""],
   ["InStride Health","Director of Design","2026-04-05","No Response","No",""],
   ["Adobe","Director, Creative Strategy & AI Innovation (R167440)","2026-04-06","No Response","No",""],
@@ -666,7 +672,7 @@ const apps = [
   ["S&P Global","Executive Director, Product Management, Enterprise Platforms — Mobility","2026-04-07","Rejected","No","2026-04-21"],
   ["Go Fractional","Design Leader (2nd Listing)","2026-04-07","Rejected","No","2026-04-29"],
   ["Discord","Senior Manager, Product Design — B2B2C","2026-04-08","Rejected","No","2026-04-14"],
-  ["Freshpaint","Head of Product Design","2026-04-08","No Response","No",""],
+  ["Freshpaint","Head of Product Design","2026-04-08","Rejected","No","2026-05-04"],
   ["Crosby","Product Design Lead","2026-04-08","No Response","No",""],
   ["Smartsheet","Design Role (2nd Application)","2026-04-09","No Response","No",""],
   ["NextGen Healthcare","Manager, Experience Design (R-101602)","2026-04-09","Rejected","No","2026-04-11"],
@@ -678,7 +684,7 @@ const apps = [
   ["Expedia Group","Director / Principal of Product Design – Search & (R-99376)","2026-04-13","No Response","No",""],
   ["OLIVER Agency (North America)","Gen AI Creative Director","2026-04-13","Rejected","No","2026-04-26"],
   ["New York Life","Corporate Vice President, Director - Digital Product Design (Req 93557)","2026-04-13","No Response","No",""],
-  ["Google","Staff UX Designer – Finance Transformation UX","2026-04-13","Interview Completed","Yes","2026-04-27"],
+  ["Google","Staff UX Designer, Finance Transformation","2026-04-13","Actively Interviewing","Yes","TBD"],
   ["Teradata","Director, User Experience Engineering","2026-04-13","Rejected","No","2026-04-24"],
   ["PandaDoc","Director of Product, Core Platform & Mobile","2026-04-13","Rejected","No","2026-04-25"],
   ["Jobgether","Senior Director, Product Design","2026-04-13","No Response","No",""],
@@ -750,6 +756,18 @@ const apps = [
   ["LTK","Manager, Product Design","2026-05-02","No Response","No",""],
   ["MillerKnoll","Design Role (no title in confirmation)","2026-05-02","No Response","No",""],
   ["Spectrum","Director, UX Design, Agent Experience","2026-05-02","No Response","No",""],
+  ["Bloomreach","Senior Product Designer","2026-05-02","No Response","No",""],
+  ["Veracode","Head of Product Design","2026-05-04","No Response","No",""],
+  ["Creative Circle","Associate Director, Digital Product Manager (Insurance)","2026-05-04","No Response","No",""],
+  ["Creative Circle","Product Marketing Writer, Financial","2026-05-04","Rejected","No","2026-05-05"],
+  ["Stripe","Design Manager, Web Presence","2026-05-04","No Response","No",""],
+  ["Spectrum","Senior Director, eCommerce UI/UX Residential","2026-05-04","Interview Scheduled","Yes","2026-05-07"],
+  ["Wolters Kluwer","Lead CX/UX Designer, Health Language (R0052341)","2026-05-04","No Response","No",""],
+  ["Empower Pharmacy","Design Role (no title in rejection)","2026-05-04","Rejected","No","2026-05-04"],
+  ["The Arena","Design Role (no title in rejection)","2026-05-04","Rejected","No","2026-05-04"],
+  ["Brown Brothers Harriman","Design Role (2nd application)","2026-05-05","No Response","No",""],
+  ["Capital One","Product Design Manager (R241109)","2026-05-05","Rejected","No","2026-05-05"],
+  ["Confidential (LinkedIn)","VP, AI Product Management","2026-05-05","Rejected","No","2026-05-05"],
 ];
 
 function getStatusBadge(status) {
@@ -796,67 +814,16 @@ function filterTable() {
 
 buildTable(apps);
 
-if (typeof Chart === 'undefined') { console.error('Chart.js failed to load'); return; }
 Chart.defaults.color = '#A0A0A0';
 Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
 Chart.defaults.font.size = 11;
-
-// ── Dynamically compute chart data from apps array ──
-
-// Status Breakdown
-const statusCounts = { interview: 0, rejected: 0, noResponse: 0, other: 0 };
-apps.forEach(r => {
-  const s = r[3].toLowerCase();
-  if (s.includes('interview') || s.includes('completed') || s.includes('actively') || s.includes('recruiter')) {
-    statusCounts.interview++;
-  } else if (s.includes('rejected')) {
-    statusCounts.rejected++;
-  } else if (s === 'no response') {
-    statusCounts.noResponse++;
-  } else {
-    statusCounts.other++;
-  }
-});
-const totalApps = apps.length;
-
-// Company multi-apply counts
-const companyCounts = {};
-apps.forEach(r => { companyCounts[r[0]] = (companyCounts[r[0]] || 0) + 1; });
-const multiApply = Object.entries(companyCounts)
-  .filter(([,v]) => v > 1)
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, 6);
-const companyLabels = multiApply.map(([name, cnt]) => `${name} (${cnt})`);
-const companyData   = multiApply.map(([,cnt]) => cnt);
-const multiTotal    = companyData.reduce((a,b) => a+b, 0);
-companyLabels.push('Other');
-companyData.push(totalApps - multiTotal);
-
-// Weekly timeline
-const weekDefs = [
-  ['Feb 22–28',    '2026-02-22','2026-02-28'],
-  ['Mar 1–7',      '2026-03-01','2026-03-07'],
-  ['Mar 8–14',     '2026-03-08','2026-03-14'],
-  ['Mar 15–21',    '2026-03-15','2026-03-21'],
-  ['Mar 22–28',    '2026-03-22','2026-03-28'],
-  ['Mar 29–Apr 4', '2026-03-29','2026-04-04'],
-  ['Apr 5–11',     '2026-04-05','2026-04-11'],
-  ['Apr 12–18',    '2026-04-12','2026-04-18'],
-  ['Apr 19–24',    '2026-04-19','2026-04-24'],
-  ['Apr 25–May 3', '2026-04-25','2026-05-03'],
-];
-const weekLabels      = weekDefs.map(w => w[0]);
-const weeklyApps      = weekDefs.map(([,s,e]) => apps.filter(r => r[2] >= s && r[2] <= e).length);
-const weeklyInterviews = weekDefs.map(([,s,e]) => apps.filter(r => r[2] >= s && r[2] <= e && r[4] === 'Yes').length);
-
-// ── Charts ──
 
 new Chart(document.getElementById('statusChart'), {
   type: 'doughnut',
   data: {
     labels: ['Interview / Active','Rejected','No Response','Other'],
     datasets: [{
-      data: [statusCounts.interview, statusCounts.rejected, statusCounts.noResponse, statusCounts.other],
+      data: [9, 62, 106, 1],
       backgroundColor: ['#FF6B2B','#E53935','#404040','#43A047'],
       borderColor: '#1A1A1A',
       borderWidth: 3,
@@ -869,7 +836,8 @@ new Chart(document.getElementById('statusChart'), {
     cutout: '68%',
     plugins: {
       legend: { position: 'bottom', labels: { padding: 14, boxWidth: 10 } },
-      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${(ctx.parsed/totalApps*100).toFixed(1)}%)` } }
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${(ctx.parsed/178*100).toFixed(1)}%)` } }
+
     }
   }
 });
@@ -877,9 +845,9 @@ new Chart(document.getElementById('statusChart'), {
 new Chart(document.getElementById('companyChart'), {
   type: 'doughnut',
   data: {
-    labels: companyLabels,
+    labels: ['Capital One (4)','JPMorgan Chase (4)','BNY (3)','Google (2)','Bubble (2)','Accenture (2)','Other'],
     datasets: [{
-      data: companyData,
+      data: [4, 4, 3, 2, 2, 2, 103],
       backgroundColor: ['#FF6B2B','#FF8C42','#FFAD6F','#FFD09B','#804020','#502010','#2E2E2E'],
       borderColor: '#1A1A1A',
       borderWidth: 3,
@@ -899,11 +867,11 @@ new Chart(document.getElementById('companyChart'), {
 new Chart(document.getElementById('timelineChart'), {
   type: 'bar',
   data: {
-    labels: weekLabels,
+    labels: ['Feb 22–28','Mar 1–7','Mar 8–14','Mar 15–21','Mar 22–28','Mar 29–Apr 4','Apr 5–11','Apr 12–18','Apr 19–24','Apr 25–May 1','May 2–5'],
     datasets: [
       {
         label: 'Applications',
-        data: weeklyApps,
+        data: [6, 14, 18, 14, 8, 19, 13, 34, 14, 23, 17],
         backgroundColor: 'rgba(255,107,43,0.75)',
         borderColor: '#FF6B2B',
         borderWidth: 1,
@@ -912,7 +880,7 @@ new Chart(document.getElementById('timelineChart'), {
       },
       {
         label: 'Interviews',
-        data: weeklyInterviews,
+        data: [0, 1, 3, 0, 2, 0, 2, 2, 0, 0, 1],
         backgroundColor: 'rgba(67,160,71,0.7)',
         borderColor: '#43A047',
         borderWidth: 1,
@@ -932,7 +900,6 @@ new Chart(document.getElementById('timelineChart'), {
       legend: { position: 'top', labels: { padding: 16, boxWidth: 10 } }
     }
   }
-});
 });
 </script>
 </body>
