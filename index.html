@@ -971,4 +971,14 @@ new Chart(document.getElementById('timelineChart'), {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
-      x: { grid: { color: '#2E
+      x: { grid: { color: '#2E2E2E' }, ticks: { color: '#606060' } },
+      y: { grid: { color: '#2E2E2E' }, ticks: { color: '#606060', stepSize: 5 }, beginAtZero: true }
+    },
+    plugins: {
+      legend: { position: 'top', labels: { padding: 16, boxWidth: 10 } }
+    }
+  }
+});
+</script>
+</body>
+</html>
