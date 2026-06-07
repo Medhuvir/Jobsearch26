@@ -132,6 +132,36 @@
     font-weight: 400;
     margin-top: 4px;
   }
+  header .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .blink-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 0 rgba(229,57,53,0.7);
+    animation: pulse-dot 1.4s infinite;
+  }
+  @keyframes pulse-dot {
+    0%   { box-shadow: 0 0 0 0 rgba(229,57,53,0.65); }
+    70%  { box-shadow: 0 0 0 7px rgba(229,57,53,0); }
+    100% { box-shadow: 0 0 0 0 rgba(229,57,53,0); }
+  }
+  .dashboard-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+  .dm-line1 { font-family: var(--font-display); letter-spacing: 0.06em; color: var(--white); font-size: 13px; }
+  .dm-line2 { color: var(--gray); font-size: 11px; letter-spacing: 0.04em; }
+  .redact {
+    display: inline-block;
+    background: var(--orange);
+    color: transparent;
+    border-radius: 2px;
+    padding: 0 6px;
+    user-select: none;
+    box-shadow: 0 0 0 1px rgba(255,94,26,0.35);
+  }
 
   main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
 
@@ -409,8 +439,8 @@
     </div>
   </a>
   <div class="header-right">
-    <div class="dashboard-meta">Dan Nemirovsky &nbsp;·&nbsp; 2/22 – Updated Jun 3, 2026</div>
-    <div class="badge">LIVE TRACKER</div>
+    <div class="dashboard-meta"><span class="dm-line1">Dan N. Career Engine</span><span class="dm-line2">2/22 – 6/7</span></div>
+    <div class="badge">OFFER PENDING<span class="blink-dot"></span></div>
   </div>
 </header>
 
@@ -487,9 +517,9 @@
     <div class="stat-block">
       <h4>Active Interviews</h4>
       <div class="stat-scroll">
-        <div class="stat-row"><span class="label">🎆 Google (Staff UX Designer – Finance Transformation)</span><span class="val orange">OFFER LETTER PENDING — Jun 2: FINAL GREEN LIGHT confirmed by Harrison Read; offer package being prepared</span></div>
-        <div class="stat-row"><span class="label">🔥 Synchrony (VP, UX Creative Director – 2600974)</span><span class="val orange">Actively Interviewing — Round 2 RESCHEDULED (Matt Rehkopf unwell Jun 3); new dates week of Jun 22–24; Tracy Carter coordinating</span></div>
-        <div class="stat-row"><span class="label">🔥 Empower Pharmacy (Head of Design)</span><span class="val orange">Actively Interviewing — Consent form signed May 13; talent@empowerpharmacy.com</span></div>
+        <div class="stat-row"><span class="label">🎆 Google (Staff UX Designer – Finance Transformation)</span><span class="val orange">OFFER LETTER PENDING — Jun 2: FINAL GREEN LIGHT confirmed by <span class="redact">Harrison Read</span>; offer package being prepared</span></div>
+        <div class="stat-row"><span class="label">🔥 Synchrony (VP, UX Creative Director – 2600974)</span><span class="val orange">Actively Interviewing — Round 2 RESCHEDULED (<span class="redact">Matt Rehkopf</span> unwell Jun 3); new dates week of Jun 22–24; <span class="redact">Tracy Carter</span> coordinating</span></div>
+        <div class="stat-row"><span class="label">🔥 Empower Pharmacy (Head of Design)</span><span class="val orange">Actively Interviewing — Consent form signed May 13; <span class="redact">talent@empowerpharmacy.com</span></span></div>
       </div>
     </div>
     <div class="stat-block">
@@ -575,12 +605,12 @@
     <div class="insight-card">
       <div class="icon">🔥</div>
       <div class="title">Google — OFFER LETTER PENDING 🎆🎆🎆</div>
-      <p>Jun 2: Harrison Read confirmed FINAL GREEN LIGHT from final review committee — offer package being prepared, expected Jun 5 or shortly after. Legal name verification sent Jun 2 via Alphabet (Veriff). Most advanced opportunity in the pipeline.</p>
+      <p>Jun 2: <span class="redact">Harrison Read</span> confirmed FINAL GREEN LIGHT from final review committee — offer package being prepared, expected Jun 5 or shortly after. Legal name verification sent Jun 2 via Alphabet (Veriff). Most advanced opportunity in the pipeline.</p>
     </div>
     <div class="insight-card">
       <div class="icon">📈</div>
       <div class="title">7% Interview Rate — 14 Total Interviews, 3 Active Threads (Google Offer Pending 🎆)</div>
-      <p>14 companies advanced to interviews. Google OFFER LETTER PENDING 🎆 — legal name verification sent Jun 2; Synchrony Round 2 rescheduled to week of Jun 22–24 (Matt Rehkopf rescheduled); Empower Pharmacy active; JPMorgan Chase actively interviewing. Spectrum (eCommerce) rejected May 31.</p>
+      <p>14 companies advanced to interviews. Google OFFER LETTER PENDING 🎆 — legal name verification sent Jun 2; Synchrony Round 2 rescheduled to week of Jun 22–24 (<span class="redact">Matt Rehkopf</span> rescheduled); Empower Pharmacy active; JPMorgan Chase actively interviewing. Spectrum (eCommerce) rejected May 31.</p>
     </div>
     <div class="insight-card">
       <div class="icon">⚡</div>
@@ -595,7 +625,7 @@
     <div class="insight-card">
       <div class="icon">🏦</div>
       <div class="title">Active Pipeline — Google Offer Pending, Synchrony Rescheduled</div>
-      <p>Google (OFFER LETTER PENDING 🎆 — legal name verification sent Jun 2), Synchrony (Round 2 rescheduled to week of Jun 22–24; Matt Rehkopf was unwell Jun 3), Empower Pharmacy (active), JPMorgan Chase UX Design Mgr VP (still active). Spectrum (eCommerce) rejected May 31 after ModernHire video interview.</p>
+      <p>Google (OFFER LETTER PENDING 🎆 — legal name verification sent Jun 2), Synchrony (Round 2 rescheduled to week of Jun 22–24; <span class="redact">Matt Rehkopf</span> was unwell Jun 3), Empower Pharmacy (active), JPMorgan Chase UX Design Mgr VP (still active). Spectrum (eCommerce) rejected May 31 after ModernHire video interview.</p>
     </div>
     <div class="insight-card">
       <div class="icon">🔁</div>
